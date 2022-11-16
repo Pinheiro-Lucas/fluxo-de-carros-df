@@ -3,6 +3,9 @@ import pandas as pd
 import time
 import os
 
+from src.database import select_db, download_db
+from src.select_db import select_db_page
+
 # Todo: Dark mode
 st.set_page_config(page_title="Tráfego de carros DF", layout="wide")
 
