@@ -10,8 +10,14 @@ sys.path.append("/src")
 
 # Todo: Dark mode
 st.set_page_config(page_title="Tráfego de carros DF",
+                   page_icon="📊",
                    layout="wide",
-                   initial_sidebar_state="expanded")
+                   initial_sidebar_state="expanded",
+                   menu_items={
+                       'Get Help': 'https://github.com/Pinheiro-Lucas/fluxo-de-carros-df',
+                       'Report a bug': "https://github.com/Pinheiro-Lucas/fluxo-de-carros-df",
+                       'About': "Alo"
+                   })
 
 if "db" not in st.session_state:
     st.session_state.db = None
@@ -61,4 +67,4 @@ if st.session_state.db is not None:
         st.header("Decrescente")
         st.bar_chart(data=decrescente, x="Intervalo", y="Fluxo")
 else:
-    st.warning("Antes de visualizar o gráfico, selecione um banco de dados")
+    st.info("Antes de visualizar o gráfico, selecione um banco de dados")

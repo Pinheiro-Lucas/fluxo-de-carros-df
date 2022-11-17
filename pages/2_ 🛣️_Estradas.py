@@ -4,4 +4,5 @@ import sys
 from src.routes import rotas
 
 # Just print estratas.txt
-st.write(rotas())
+with st.spinner("Carregando estradas.txt..."):
+    st.write(rotas())
