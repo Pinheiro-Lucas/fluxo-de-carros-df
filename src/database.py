@@ -31,25 +31,13 @@ def download_db(url):
 
     url = soup.find("p", class_="muted ellipsis").a["href"]
 
-    local_filename = url.split('/')[-1]
-
-    # Stream needs to be true
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
-    return local_filename
+    return pd.read_csv(url, encoding='latin-1')
 
 
 @st.cache
-def fluxo_carros(tipo: str):
+def fluxo_carros(data, tipo="Total"):
     # Performance counter
     inicial = time.time()
-
-    # Importing data from dados.gov.br
-    data = pd.read_csv(fr"{os.path.dirname(__file__).replace('/src', '')}/fluxo-trecho-dados-abertos-divulgacao-10-2022.csv",
-                       encoding='latin-1')
 
     # Creating the dataframe
     df = pd.DataFrame(data, columns=["Trecho", "Sentido", "Dia", "Intervalo", "Porte", "Fluxo"])

@@ -15,5 +15,5 @@ option = st.selectbox("", data.keys(), index=start, label_visibility="collapsed"
 if option is not None:
     # Download selected database
     with st.spinner(f"Baixando {option}"):
-        download_db(data[option])
+        st.session_state.db = download_db(data[option])
     st.success(f"Banco de dados armazenado com sucesso")
