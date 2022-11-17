@@ -1,49 +1,17 @@
 import streamlit as st
 import pandas as pd
-import time
-import os
+import sys
 
-from src.database import select_db, download_db
-from src.select_db import select_db_page
+from src.database import select_db, download_db, fluxo_carros
+from src.routes import rotas
+
+# Relative imports
+sys.path.append("/src")
 
 # Todo: Dark mode
-st.set_page_config(page_title="Tráfego de carros DF", layout="wide")
-
-
-# Opens estradas.txt and collects all name values
-def rotas(path="estradas.txt"):
-    result = {}
-    with open(fr"{os.path.dirname(__file__)}/{path}", 'r') as cod_estradas:
-        e = [i for i in cod_estradas][4:]  # Remove instructions from the file
-        for i in e:
-            cod_estradas, desc = i.split(maxsplit=1)
-            result[cod_estradas] = desc[:-1]
-
-    return result
-
-
-@st.cache
-def fluxo_carros(tipo: str):
-    # Performance counter
-    inicial = time.time()
-
-    # Importing data from dados.gov.br
-    data = pd.read_csv(fr"{os.path.dirname(__file__)}/fluxo-trecho-dados-abertos-divulgacao-10-2022.csv",
-                       encoding='latin-1')
-
-    # Creating the dataframe
-    df = pd.DataFrame(data, columns=["Trecho", "Sentido", "Dia", "Intervalo", "Porte", "Fluxo"])
-
-    # Filtering all
-    data = df[df.Porte == tipo]
-
-    # Just some car information
-    carros = sum(map(int, df.Fluxo))
-
-    # Ends the performance counter
-    final = time.time()
-
-    return df, data, carros, final-inicial
+st.set_page_config(page_title="Tráfego de carros DF",
+                   layout="wide",
+                   initial_sidebar_state="expanded")
 
 
 estradas = rotas()
@@ -86,3 +54,4 @@ if sum(crescente.Fluxo) != 0:
 if sum(decrescente.Fluxo) != 0:
     st.header("Decrescente")
     st.bar_chart(data=decrescente, x="Intervalo", y="Fluxo")
+

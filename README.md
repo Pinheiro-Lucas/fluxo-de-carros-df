@@ -5,7 +5,7 @@
 ## Como usar:
 ```bash
   pip install -r requirements.txt
-  streamlit run main.py
+  streamlit run app.py
 ```
 
 ## Tecnologias utilizadas:

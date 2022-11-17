@@ -1,4 +1,11 @@
+import streamlit as st
+
+import pandas as pd
+import time
+import os
+
 import requests
+
 from bs4 import BeautifulSoup
 
 
@@ -33,4 +40,28 @@ def download_db(url):
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
     return local_filename
+
+
+@st.cache
+def fluxo_carros(tipo: str):
+    # Performance counter
+    inicial = time.time()
+
+    # Importing data from dados.gov.br
+    data = pd.read_csv(fr"{os.path.dirname(__file__).replace('/src', '')}/fluxo-trecho-dados-abertos-divulgacao-10-2022.csv",
+                       encoding='latin-1')
+
+    # Creating the dataframe
+    df = pd.DataFrame(data, columns=["Trecho", "Sentido", "Dia", "Intervalo", "Porte", "Fluxo"])
+
+    # Filtering all
+    data = df[df.Porte == tipo]
+
+    # Just some car information
+    carros = sum(map(int, df.Fluxo))
+
+    # Ends the performance counter
+    final = time.time()
+
+    return df, data, carros, final-inicial
 
