@@ -62,9 +62,13 @@ if st.session_state.db is not None:
     # Check if data is not null to render
     if sum(crescente.Fluxo) != 0:
         st.header("Crescente")
-        st.bar_chart(data=crescente, x="Intervalo", y="Fluxo")
+        st.bar_chart(data=crescente.groupby(['Trecho', 'Intervalo', 'Porte']).sum().reset_index(),
+                     x="Intervalo",
+                     y="Fluxo")
     if sum(decrescente.Fluxo) != 0:
         st.header("Decrescente")
-        st.bar_chart(data=decrescente, x="Intervalo", y="Fluxo")
+        st.bar_chart(data=decrescente.groupby(['Trecho', 'Intervalo', 'Porte']).sum().reset_index(),
+                     x="Intervalo",
+                     y="Fluxo")
 else:
     st.info("Antes de visualizar o gráfico, selecione um banco de dados")

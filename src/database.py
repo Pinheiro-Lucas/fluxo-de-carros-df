@@ -17,12 +17,7 @@ def select_db():
 
     result = soup.find_all("a", class_="heading")
 
-    dbs = {}
-
-    for i in result:
-        dbs[i["title"]] = "https://dados.gov.br" + i["href"]
-
-    return dbs
+    return {i["title"]: "https://dados.gov.br" + i["href"] for i in result}
 
 
 def download_db(url):
