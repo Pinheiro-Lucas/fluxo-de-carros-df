@@ -8,7 +8,6 @@ from src.routes import rotas
 # Relative imports
 sys.path.append("/src")
 
-# Todo: Dark mode
 st.set_page_config(page_title="Tráfego de carros DF",
                    page_icon="📊",
                    layout="wide",
@@ -19,15 +18,19 @@ st.set_page_config(page_title="Tráfego de carros DF",
                        'About': "Alo"
                    })
 
-if "db" not in st.session_state:
-    st.session_state.db = None
+for i in ("db", "option"):
+    if i not in st.session_state:
+        st.session_state[i] = None
+
+if "estradas" not in st.session_state:
+    st.session_state.estradas = rotas()
 
 if st.session_state.db is not None:
-    estradas = rotas()
     fluxo_all, _, qtd_carros, tempo_total = fluxo_carros(st.session_state.db)
 
     # Streamlit visualization
-    st.title(f"{qtd_carros:,} carros carregados em {tempo_total:.2f}s")
+    st.title(f"{st.session_state.option} (Brasília-DF)")
+    st.header(f"{qtd_carros:,} carros carregados em {tempo_total:.2f}s")
 
     # Type input
     tipos = dict.fromkeys(fluxo_all.Porte.tolist())
@@ -40,8 +43,8 @@ if st.session_state.db is not None:
     # Local input
     locais = dict.fromkeys(fluxo.Trecho.tolist())
     # Setting all the saved names
-    for estrada in estradas.keys():
-        locais[estrada] = estradas[estrada]
+    for estrada in st.session_state.estradas.keys():
+        locais[estrada] = st.session_state.estradas[estrada]
 
     # If the database name equals to None, put ID instead (UI)
     for cod, nome in locais.items():
@@ -51,8 +54,7 @@ if st.session_state.db is not None:
     # It's easier to find with name value in streamlit
     nomes_locais = {y: x for x, y in locais.items()}
     local = st.selectbox("Selecione a região",
-                         nomes_locais,
-                         help="Algumas estradas necessitam ser identificadas em estradas.txt")
+                         nomes_locais)
     fluxo_local = fluxo[fluxo.Trecho == nomes_locais[local]]
 
     # Rendering both graphs
@@ -62,13 +64,17 @@ if st.session_state.db is not None:
     # Check if data is not null to render
     if sum(crescente.Fluxo) != 0:
         st.header("Crescente")
-        st.bar_chart(data=crescente.groupby(['Trecho', 'Intervalo', 'Porte']).sum().reset_index(),
+        st.bar_chart(data=crescente.groupby(['Trecho', 'Intervalo', 'Porte']).sum(numeric_only=True).reset_index(),
                      x="Intervalo",
                      y="Fluxo")
     if sum(decrescente.Fluxo) != 0:
         st.header("Decrescente")
-        st.bar_chart(data=decrescente.groupby(['Trecho', 'Intervalo', 'Porte']).sum().reset_index(),
+        st.bar_chart(data=decrescente.groupby(['Trecho', 'Intervalo', 'Porte']).sum(numeric_only=True).reset_index(),
                      x="Intervalo",
                      y="Fluxo")
+
+    # Raw data
+    with st.expander("Amostra dos dados brutos"):
+        st.dataframe(fluxo_local)
 else:
     st.info("Antes de visualizar o gráfico, selecione um banco de dados")
